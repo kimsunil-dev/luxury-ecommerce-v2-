@@ -1,7 +1,7 @@
 import { getSettings } from './modules/api.js';
 
 // --- Global Navigation Initialization ---
-document.addEventListener('DOMContentLoaded', async () => {
+async function initNav() {
     try {
         const navRow = document.querySelector('.header-nav-row');
         if (!navRow) return;
@@ -65,8 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ? `<span class="nav-mega-link ${highlightCls}" style="visibility:hidden; height:1em; display:inline-block; margin-bottom:0.6rem;">&nbsp;</span>` 
                         : `<a href="${targetLink}" class="nav-mega-link ${highlightCls}">${displayName}</a>`;
                 }
-            }
-});
+            });
             return html;
         }
 
@@ -129,4 +128,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Navigation Module Error:", err);
     }
 }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNav);
+} else {
+    initNav();
+}

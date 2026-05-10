@@ -35,8 +35,19 @@ export async function getSettings() {
         // Fallback to local storage if API fails temporarily
         const local = localStorage.getItem('complexnumber_settings');
         return local ? JSON.parse(local) : {
-            noticesBoard: [],
-            menus: [],
+            noticesBoard: [
+                { id: 1, title: "배송 관련 공지사항", content: "현재 택배사 파업으로 인해 일부 지역 배송이 지연되고 있습니다. 양해 부탁드립니다.", date: "2026-05-08" }
+            ],
+            menus: [
+                { id: 101, name: 'SHOP', link: '#', highlight: false, children: [
+                    { id: 104, name: 'CLOTHING', link: '#', children: [
+                        { id: 105, name: 'DRESSES', link: '#', children: [] },
+                        { id: 106, name: 'TOPS', link: '#', children: [] }
+                    ]}
+                ]}, 
+                { id: 102, name: 'NEW ARRIVALS', link: '#', highlight: false, children: []}, 
+                { id: 103, name: 'YES SIR.', link: '#', highlight: true, children: []}
+            ],
             footerMenus: [
                 { title: '고객 센터', items: [] },
                 { title: '회사 정보', items: [] },
@@ -50,6 +61,7 @@ export async function getSettings() {
             perksHashtag: '#SIRTHELABEL',
             promoSpeed: 40
         };
+
         if (local) {
             try {
                 const parsed = JSON.parse(local);
@@ -119,21 +131,35 @@ export async function getProducts() {
 }
 
 /**
- * 상품 목록 저장하기
+ * 상품 개별 저장 (Insert or Update)
  */
-export async function saveProducts(productsData) {
+export async function saveProduct(productData) {
     try {
         const res = await fetch(`${API_BASE}/api/products`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(productsData)
+            body: JSON.stringify(productData)
         });
-        if (!res.ok) throw new Error('Failed to save products');
-        localStorage.setItem('complexnumber_products', JSON.stringify(productsData));
+        if (!res.ok) throw new Error('Failed to save product');
         return await res.json();
     } catch (e) {
-        console.error('saveProducts error:', e);
-        localStorage.setItem('complexnumber_products', JSON.stringify(productsData));
-        return { success: true, offline: true };
+        console.error('saveProduct error:', e);
+        return { success: false, error: e.message };
+    }
+}
+
+/**
+ * 상품 개별 삭제
+ */
+export async function deleteProductApi(id) {
+    try {
+        const res = await fetch(`${API_BASE}/api/products/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete product');
+        return await res.json();
+    } catch (e) {
+        console.error('deleteProduct error:', e);
+        return { success: false, error: e.message };
     }
 }
