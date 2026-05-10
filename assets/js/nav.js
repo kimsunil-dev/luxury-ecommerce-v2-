@@ -128,7 +128,6 @@ async function initNav() {
         console.error("Navigation Module Error:", err);
     }
 }
-}
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNav);
