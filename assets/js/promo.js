@@ -1,7 +1,7 @@
 import { getSettings } from './modules/api.js';
 
 // --- Global Promo Initialization ---
-document.addEventListener('DOMContentLoaded', async () => {
+async function initPromo() {
     try {
         const appContent = document.getElementById('app-content');
         if (!appContent) return; // Only show on index.html where app-content is defined, or adjust logic
@@ -22,12 +22,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dateA = new Date(a.date).getTime() || 0;
             const dateB = new Date(b.date).getTime() || 0;
             return dateB - dateA || b.id - a.id;
-        }
-});
+        });
         let top4Notices = sortedNotices.slice(0, 4).map(n => n.title);
         
         while (top4Notices.length < 4) {
-            top4Notices.push('?�로??공�??�항???�습?�다.');
+            top4Notices.push('?�로??공�??�항???�습?�다.');
         }
 
         promoSection.innerHTML = `
@@ -95,4 +94,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Promo Module Error:", err);
     }
 }
-});
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPromo);
+} else {
+    initPromo();
+}
