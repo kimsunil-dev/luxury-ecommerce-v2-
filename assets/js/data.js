@@ -230,7 +230,7 @@ async function getProducts() {
     if (pageCache.products) return pageCache.products;
     try {
         const data = await dbGet('products');
-        pageCache.products = Array.isArray(data) ? data : defaultProducts;
+        pageCache.products = Array.isArray(data) && data.length > 0 ? data : defaultProducts;
         return pageCache.products;
     } catch(e) {
         return defaultProducts;
@@ -246,7 +246,7 @@ async function getLayout() {
     if (pageCache.layout) return pageCache.layout;
     try {
         const data = await dbGet('layout');
-        pageCache.layout = Array.isArray(data) ? data : defaultLayout;
+        pageCache.layout = Array.isArray(data) && data.length > 0 ? data : defaultLayout;
         return pageCache.layout;
     } catch(e) {
         return defaultLayout;
@@ -262,7 +262,7 @@ async function getSettings() {
     if (pageCache.settings) return pageCache.settings;
     try {
         const data = await dbGet('app_settings');
-        if (!data) return defaultSettings;
+        if (!data || Object.keys(data).length === 0) return defaultSettings;
         
         const lbData = data.lookbook || {};
         

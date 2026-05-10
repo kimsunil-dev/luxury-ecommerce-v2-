@@ -172,41 +172,53 @@ app.post('/api/settings', async (req, res) => {
     res.json({ success: true });
 });
 
-// Products API
+// Products API (V2 RESTful DB Schema)
 app.get('/api/products', async (req, res) => {
     const { data, error } = await supabase
         .from('products')
-        .select('product_data')
-        .eq('id', 1)
-        .single();
+        .select('*')
+        .order('created_at', { ascending: false });
         
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
         console.error('Supabase Error (get products):', error);
         return res.status(500).json({ error: 'Database error' });
     }
-    
-    res.json(data ? data.product_data : []);
+    res.json(data || []);
 });
 
 app.post('/api/products', async (req, res) => {
-    const productsData = req.body;
+    const p = req.body;
+    // Map Frontend payload to V2 schema
+    const productData = {
+        name: p.name,
+        price: Number(p.price) || 0,
+        category: p.category || 'Outerwear',
+        sku: p.sku || `SKU-${Date.now()}`,
+        weight_grams: Number(p.weight_grams) || 0,
+        stock_status: p.stock_status || 'IN_STOCK',
+        style_tags: p.style_tags || [],
+        img_main: p.img || '',
+        img_hover: p.hoverImg || '',
+        content_html: p.description || '',
+        is_visible: true
+    };
     
-    const { data: existing } = await supabase.from('products').select('id').eq('id', 1).single();
-    
-    let error;
-    if (existing) {
-        const result = await supabase.from('products').update({ product_data: productsData, created_at: new Date() }).eq('id', 1);
-        error = result.error;
+    // If ID exists and is a UUID, it's an update. Otherwise, it's an insert.
+    if (p.id && p.id.length > 20) {
+        const { data, error } = await supabase.from('products').update(productData).eq('id', p.id).select();
+        if (error) return res.status(500).json({ error: error.message });
+        return res.json({ success: true, data: data[0] });
     } else {
-        const result = await supabase.from('products').insert([{ id: 1, product_data: productsData }]);
-        error = result.error;
+        const { data, error } = await supabase.from('products').insert([productData]).select();
+        if (error) return res.status(500).json({ error: error.message });
+        return res.json({ success: true, data: data[0] });
     }
-    
-    if (error) {
-        console.error('Supabase Error (save products):', error);
-        return res.status(500).json({ error: 'Database error' });
-    }
-    
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+    const { id } = req.params;
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) return res.status(500).json({ error: error.message });
     res.json({ success: true });
 });
 

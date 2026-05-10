@@ -1,0 +1,147 @@
+<div class="admin-header">
+    <h2>화면 디자인 및 레이아웃</h2>
+</div>
+
+<div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 1rem;">
+    <button class="btn" id="subtab-lookbook" style="background: #111; color: #fff;">메인 화면 (룩북)</button>
+    <button class="btn" id="subtab-shop" style="background: #f5f5f5; color: #333; border: 1px solid #ddd;">상품 전시 페이지</button>
+    <button class="btn" id="subtab-detail" style="background: #f5f5f5; color: #333; border: 1px solid #ddd;">상품 상세 페이지</button>
+</div>
+
+<!-- 서브뷰: 룩북 메인 -->
+<div id="subview-lookbook-main">
+    <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">메인 화면 디자인 (룩북 블럭 관리)</h3>
+    <p class="admin-desc" style="margin-bottom: 1.5rem;">쇼핑몰 메인 화면의 대형 화보 이미지와 동영상을 제어합니다.</p>
+    
+<!-- 룩북 미리보기 시뮬레이터 -->
+<div class="admin-card" style="margin-bottom: 2rem; background: #fafafa; border: 2px dashed #ddd; overflow: hidden; position: relative;">
+    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">미리보기</h3>
+    <!-- scale을 통해 축소 표시. wrapper에서 overflow-y: auto로 스크롤 허용 -->
+    <div style="width: 100%; height: 500px; overflow-y: auto; overflow-x: hidden; border: 1px solid #ccc; background: #fff;">
+        <div id="lookbook-simulator-content" style="width: 200%; transform: scale(0.5); transform-origin: top left;">
+            <!-- 여기에 프론트엔드 스타일 레이아웃이 동적으로 삽입됩니다. -->
+        </div>
+    </div>
+</div>
+
+<div class="admin-card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0; font-size: 1.2rem;">보드판 (레이아웃 빌더)</h3>
+        <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn" id="reset-board-btn" style="background: #dc3545; color: white;">보드판 초기화</button>
+            <button type="button" class="btn" id="add-zone-btn" style="background: #28a745; color: white;">+ 구역 추가</button>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label style="font-weight: bold;">제목 (버전명)</label>
+        <input type="text" id="lookbook-title" class="form-control" placeholder="예: 2026 썸머 프리폴 컬렉션" style="font-size: 1.1rem; padding: 0.8rem;">
+    </div>
+
+    <!-- Layout Canvas -->
+    <div id="layout-canvas" style="background: #f9f9f9; border: 2px dashed #ccc; min-height: 200px; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; position: relative;">
+        <!-- 구역(Zone)이 드래그 앤 드롭으로 추가될 영역 -->
+        <div id="empty-canvas-msg" style="text-align: center; padding: 3rem; color: #aaa;">
+            구역을 먼저 추가해주세요.
+        </div>
+    </div>
+
+    <!-- Trash Bin for Drag to Delete -->
+    <div id="canvas-trash-bin" style="background: #ffe5e5; border: 2px dashed #ff4d4d; color: #ff4d4d; text-align: center; padding: 1rem; border-radius: 8px; display: none;">
+        🗑️ 이곳으로 구역을 드래그하여 삭제
+    </div>
+</div>
+
+<!-- Block Property Editor (Hidden by default) -->
+<div class="admin-card" id="block-editor-panel" style="display: none; border-left: 4px solid #000; background: #fff; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0; font-size: 1.1rem;">선택된 블럭 설정</h3>
+        <button type="button" class="btn" id="close-editor-btn" style="background: #eee; color: #333; padding: 0.2rem 0.5rem;">닫기</button>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+            <label class="form-group" style="display:block; font-weight:600;">기본 이미지</label>
+            <input type="file" id="block-img-input" class="form-control" accept="image/*" style="margin-bottom: 0.5rem;">
+            <div id="block-img-preview" style="width: 100px; height: 100px; border: 1px solid #ccc; background: #f4f4f4; background-size: cover; background-position: center; display: none;"></div>
+            
+            <label class="form-group" style="display:block; font-weight:600; margin-top: 1rem;">호버 시 재생할 동영상 (선택)</label>
+            <input type="file" id="block-vid-input" class="form-control" accept="video/*">
+            <div id="block-vid-preview" style="font-size: 0.8rem; color: #03c75a; display: none; margin-top: 0.3rem;">비디오 등록됨</div>
+        </div>
+        <div>
+            <label class="form-group" style="display:block; font-weight:600;">클릭 시 이동할 링크</label>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <input type="text" id="block-link-input" class="form-control" placeholder="상품 페이지 지정 안함 (기본: 상품 목록)" readonly>
+                <button type="button" class="btn" id="select-product-link-btn" style="background: #333; color: white; white-space: nowrap;">상품 선택</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #666;">링크를 지정하지 않으면 기본 상품 목록(products.html)으로 이동합니다.</p>
+            
+            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <button type="button" class="btn" id="add-subblock-btn" style="background: #fff; color: #000; border: 1px solid #000;">+ 이 블럭 안에 하위 블럭 분할 추가 (최대 4개)</button>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top: 1rem; text-align: right;">
+        <button type="button" class="btn" id="apply-block-data-btn" style="background: #000; color: white;">블럭에 내용 적용</button>
+    </div>
+</div>
+
+<div style="display: flex; gap: 1rem;">
+    <button type="button" class="btn" id="save-lookbook-btn" style="flex: 1; padding: 1rem; font-size: 1.1rem; background: #000; color: #fff;">보드판 저장 (Save)</button>
+</div>
+
+<!-- Product Selection Modal for Link -->
+<div id="product-link-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 500px; max-height: 80vh; display: flex; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="margin: 0;">연결할 상품 선택</h3>
+            <button type="button" id="close-product-modal-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+        <input type="text" id="product-search-input" class="form-control" placeholder="상품명 검색..." style="margin-bottom: 1rem;">
+        <div id="product-link-list" style="flex: 1; overflow-y: auto; border: 1px solid #eee; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Products will be listed here -->
+        </div>
+        <div style="margin-top: 1rem; text-align: right;">
+            <button type="button" class="btn" id="clear-product-link-btn" style="background: #dc3545; color: white; margin-right: 0.5rem;">링크 해제</button>
+        </div>
+    </div>
+</div>
+
+<!-- 룩북 히스토리 게시판 -->
+<div class="admin-card" style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0; font-size: 1.1rem;">적용 내역 (History)</h3>
+        <button type="button" class="btn" id="delete-selected-history-btn" style="background: #dc3545; color: white; padding: 0.3rem 0.6rem; font-size: 0.9rem;">선택 삭제</button>
+    </div>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;"><input type="checkbox" id="history-select-all"></th>
+                <th style="width: 60px;">번호</th>
+                <th style="width: 150px;">적용 일시</th>
+                <th>제목 (버전명)</th>
+                <th style="width: 100px;">상태</th>
+                <th style="width: 180px;">관리</th>
+            </tr>
+        </thead>
+        <tbody id="lookbook-history-table">
+            <!-- 히스토리가 동적으로 삽입됩니다. -->
+        </tbody>
+    </table>
+</div>
+</div> <!-- End of subview-lookbook-main -->
+
+<!-- 서브뷰: 상품 전시 레이아웃 -->
+<div id="subview-shop-layout" style="display: none;">
+    <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">상품 전시 레이아웃 (Shop)</h3>
+    <p class="admin-desc" style="margin-bottom: 1.5rem;">상품이 전시되는 리스트 페이지의 레이아웃 구조(위젯 블럭)를 관리합니다.</p>
+    <div id="shop-layout-container"></div>
+</div>
+
+<!-- 서브뷰: 상품 상세 레이아웃 -->
+<div id="subview-detail-layout" style="display: none;">
+    <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">상품 상세 페이지 레이아웃 (Detail)</h3>
+    <p class="admin-desc" style="margin-bottom: 1.5rem;">개별 상품 상세 화면의 레이아웃 구조(위젯 블럭)를 관리합니다.</p>
+    <div id="detail-layout-container"></div>
+</div>

@@ -5,14 +5,12 @@ window.addEventListener('error', function(e) {
     errDiv.style = "position:fixed;top:50px;left:0;background:red;color:white;z-index:9999;padding:20px;font-size:16px;width:100%;box-sizing:border-box;box-shadow:0 4px 10px rgba(0,0,0,0.3);";
     errDiv.innerText = `JS ERROR: ${e.message} at ${e.filename}:${e.lineno}`;
     document.body.appendChild(errDiv);
-}
 });
 window.addEventListener('unhandledrejection', function(e) {
     const errDiv = document.createElement('div');
     errDiv.style = "position:fixed;top:100px;left:0;background:orange;color:white;z-index:9999;padding:20px;font-size:16px;width:100%;box-sizing:border-box;";
     errDiv.innerText = `PROMISE REJECTION: ${e.reason}`;
     document.body.appendChild(errDiv);
-}
 });
 
 function shuffleArray(array) {
@@ -51,13 +49,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             modal.querySelector('.modal-content-wrapper').innerHTML = ''; // Stop video if any
             document.body.style.overflow = '';
         }, 300);
-    }
-});
+    });
 
-    // Settings 가?�오�?
+    // Settings
     const settings = await getSettings();
     
-    // 미디??(비디???��?지) ?�동 ?�별 ?�더??
     function renderMedia(src, alt) {
         if (!src || typeof src !== 'string') return '';
         if (src.startsWith('data:video')) {
@@ -67,7 +63,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ?�이???�효??보장
     const lb = settings.lookbook || {};
     const perksList = Array.isArray(settings.perks) ? settings.perks : [
         { title: 'Worldwide Instant Exchanges', desc: 'Easy online size swaps' },
@@ -75,23 +70,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         { title: 'SIR. Loyalty', desc: 'Earn points and move through our tiered program' }
     ];
 
-    // INJECT LOOKBOOK EDITORIAL LAYOUT (Dynamic)
     appContent.innerHTML = '';
 
-    // Legacy Data Migration (same logic as in admin, but for front-end rendering fallback)
     function migrateLegacyLookbook(lbObj) {
         if (lbObj && lbObj.version === 2) return lbObj;
         const newLb = { version: 2, title: 'Legacy', zones: [] };
         if (!lbObj || Object.keys(lbObj).length === 0) return newLb;
-        const cb = (img, vid, width=100) => ({ id: 'b'+Date.now()+Math.random(), width, type: 'media', img: img||'', vid: vid||'', link: '' }
-});
+        const cb = (img, vid, width=100) => ({ id: 'b'+Date.now()+Math.random(), width, type: 'media', img: img||'', vid: vid||'', link: '' });
         
-        if (lbObj.splitLeft || lbObj.splitRight) { newLb.zones.push({ id: 'z1', blocks: [cb(lbObj.splitLeft, lbObj.splitLeftVideo, 50), cb(lbObj.splitRight, lbObj.splitRightVideo, 50)] }
-}); }
-        if (lbObj.fullWidth) { newLb.zones.push({ id: 'z2', blocks: [cb(lbObj.fullWidth, lbObj.fullWidthVideo, 100)] }
-}); }
-        if (lbObj.splitLeft2 || lbObj.splitRight2) { newLb.zones.push({ id: 'z3', blocks: [cb(lbObj.splitLeft2, lbObj.splitLeft2Video, 50), cb(lbObj.splitRight2, lbObj.splitRight2Video, 50)] }
-}); }
+        if (lbObj.splitLeft || lbObj.splitRight) { newLb.zones.push({ id: 'z1', blocks: [cb(lbObj.splitLeft, lbObj.splitLeftVideo, 50), cb(lbObj.splitRight, lbObj.splitRightVideo, 50)] }); }
+        if (lbObj.fullWidth) { newLb.zones.push({ id: 'z2', blocks: [cb(lbObj.fullWidth, lbObj.fullWidthVideo, 100)] }); }
+        if (lbObj.splitLeft2 || lbObj.splitRight2) { newLb.zones.push({ id: 'z3', blocks: [cb(lbObj.splitLeft2, lbObj.splitLeft2Video, 50), cb(lbObj.splitRight2, lbObj.splitRight2Video, 50)] }); }
         if (lbObj.asymLeft || lbObj.asymRight1) {
             newLb.zones.push({
                 id: 'z4',
@@ -102,21 +91,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                         cb(lbObj.asymRight3, lbObj.asymRight3Video), cb(lbObj.asymRight4, lbObj.asymRight4Video)
                     ]}
                 ]
-            }
-});
+            });
         }
         return newLb;
     }
 
-    const dynamicLayout = migrateLegacyLookbook(settings.lookbook || {}
-});
+    const dynamicLayout = migrateLegacyLookbook(settings.lookbook || {});
 
-    // Create a container wrapper
     const lookbookWrapper = document.createElement('div');
     lookbookWrapper.className = 'dynamic-lookbook';
     appContent.appendChild(lookbookWrapper);
 
-    // Dynamic rendering function
     function renderDynamicBlock(block, isChild = false) {
         const el = document.createElement('div');
         if (!isChild) {
@@ -128,10 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         el.style.position = 'relative';
         el.style.overflow = 'hidden';
         
-        // CSS for flex children in nested grids
-        if (isChild) {
-            el.style.display = 'flex';
-        }
+        if (isChild) el.style.display = 'flex';
 
         if (block.type === 'media') {
             const targetLink = block.link || 'products.html';
@@ -176,14 +158,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             if (imgAdded && vidAdded) {
-                el.addEventListener('mouseenter', () => { mediaElVid.play().catch(()=>{}
-}); mediaElVid.style.opacity='1'; mediaElImg.style.opacity='0'; }
-});
-                el.addEventListener('mouseleave', () => { mediaElVid.pause(); mediaElVid.style.opacity='0'; mediaElImg.style.opacity='1'; }
-});
+                el.addEventListener('mouseenter', () => { mediaElVid.play().catch(()=>{}); mediaElVid.style.opacity='1'; mediaElImg.style.opacity='0'; });
+                el.addEventListener('mouseleave', () => { mediaElVid.pause(); mediaElVid.style.opacity='0'; mediaElImg.style.opacity='1'; });
             } else if (vidAdded && !imgAdded) {
-                mediaElVid.style.opacity = '1'; mediaElVid.autoplay = true; mediaElVid.play().catch(()=>{}
-});
+                mediaElVid.style.opacity = '1'; mediaElVid.autoplay = true; mediaElVid.play().catch(()=>{});
             } else if (!imgAdded && !vidAdded) {
                 el.style.backgroundColor = '#f4f4f4';
             }
@@ -201,8 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             block.children.forEach(child => {
                 const childEl = renderDynamicBlock(child, true);
                 el.appendChild(childEl);
-            }
-});
+            });
         }
         return el;
     }
@@ -211,18 +188,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const zoneRow = document.createElement('section');
         zoneRow.className = 'lb-dynamic-zone';
         zoneRow.style.display = 'flex';
-        // Add responsiveness constraint via class
         zone.blocks.forEach(block => {
             const blockEl = renderDynamicBlock(block, false);
             zoneRow.appendChild(blockEl);
-        }
-});
+        });
         lookbookWrapper.appendChild(zoneRow);
-    }
-});
+    });
 
     } catch (globalErr) {
         console.error("Initialization error:", globalErr);
     }
-}
 });

@@ -1,7 +1,6 @@
 import { getSettings, saveSettings } from '../modules/api.js';
 
 let settings;
-const menuContainer = document.getElementById('menu-builder-container');
 
 export async function initSettings() {
     settings = await getSettings();
@@ -12,10 +11,17 @@ export async function initSettings() {
     window.addDepth1Menu = addDepth1Menu;
     window.saveMenuConfig = saveMenuConfig;
 
+    const addBtn = document.getElementById('add-depth1-btn');
+    if (addBtn) addBtn.addEventListener('click', addDepth1Menu);
+
+    const saveBtn = document.getElementById('save-menu-btn');
+    if (saveBtn) saveBtn.addEventListener('click', saveMenuConfig);
+
     renderMenuBuilder();
 }
 
 function renderMenuBuilder() {
+    const menuContainer = document.getElementById('menu-builder-container');
     if(!menuContainer) return;
     let html = buildMenuHtml(settings.menus, 1, 'menus');
     menuContainer.innerHTML = html;

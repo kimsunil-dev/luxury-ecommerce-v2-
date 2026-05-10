@@ -1,0 +1,114 @@
+<div class="admin-header">
+    <h2>상품 등록</h2>
+</div>
+<p class="admin-desc">새로운 상품을 등록하면 자사몰 및 연동된 외부 쇼핑몰 플랫폼으로 동기화됩니다.</p>
+
+<div class="admin-card">
+    <form id="product-form" class="admin-form" style="margin: 0; padding: 0; border: none; background: transparent;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>상품명 <span style="color:red">*</span></label>
+                <input type="text" id="product-name" class="form-control" required placeholder="예: 린넨 미니 드레스">
+            </div>
+            <div class="form-group">
+                <label>가격 (KRW) <span style="color:red">*</span></label>
+                <input type="number" id="product-price" class="form-control" required placeholder="예: 350000">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>SKU (바코드) <span style="color:red">*</span></label>
+                <input type="text" id="product-sku" class="form-control" required placeholder="예: DRESS-BLK-001">
+            </div>
+            <div class="form-group">
+                <label>카테고리 <span style="color:red">*</span></label>
+                <input type="text" id="product-category" class="form-control" required placeholder="예: Dresses">
+            </div>
+            <div class="form-group">
+                <label>무게 (g)</label>
+                <input type="number" id="product-weight" class="form-control" placeholder="예: 450">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>재고 상태 <span style="color:red">*</span></label>
+                <select id="product-stock-status" class="form-control" required>
+                    <option value="IN_STOCK">판매중 (IN_STOCK)</option>
+                    <option value="SOLD_OUT">품절 (SOLD_OUT)</option>
+                    <option value="PRE_ORDER">예약 주문 (PRE_ORDER)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>스타일 태그 (콤마 구분)</label>
+                <input type="text" id="product-style-tags" class="form-control" placeholder="예: Minimal, Evening, Resort">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>메인 이미지 (필수)</label>
+            <input type="file" id="product-image" class="form-control" accept="image/*" required>
+        </div>
+        <div class="form-group">
+            <label>서브 이미지 (최대 12장 선택 가능)</label>
+            <input type="file" id="product-sub-images" class="form-control" accept="image/*" multiple>
+            <small style="display:block; margin-top:0.3rem; color:#666;">여러 장의 이미지를 드래그하거나 Shift/Ctrl 키를 눌러 동시에 선택하세요.</small>
+        </div>
+        <div class="form-group">
+            <label>동영상 (선택)</label>
+            <input type="file" id="product-video" class="form-control" accept="video/*">
+        </div>
+        <div class="form-group">
+            <label>대표 색상 (Hex 코드)</label>
+            <input type="text" id="product-color" class="form-control" placeholder="예: #ffffff (기본값 흰색)">
+        </div>
+        <div class="form-group">
+            <label>사이즈 (콤마 구분)</label>
+            <input type="text" id="product-sizes" class="form-control" placeholder="예: 0P, 0, 1, 2, 3, 4">
+        </div>
+        <!-- Detailed Rich Text Editor Area -->
+        <div class="form-group">
+            <label>상세 설명 (HTML 에디터)</label>
+            <div id="editor-toolbar-product" class="editor-toolbar">
+                <button type="button" onclick="formatDoc('bold')" title="굵게"><b>B</b></button>
+                <button type="button" onclick="formatDoc('italic')" title="기울임"><i>I</i></button>
+                <button type="button" onclick="formatDoc('underline')" title="밑줄"><u>U</u></button>
+                <div class="divider"></div>
+                <button type="button" onclick="formatDoc('justifyLeft')" title="왼쪽 정렬">⫷</button>
+                <button type="button" onclick="formatDoc('justifyCenter')" title="가운데 정렬">≡</button>
+                <button type="button" onclick="formatDoc('justifyRight')" title="오른쪽 정렬">⫸</button>
+                <div class="divider"></div>
+                <button type="button" onclick="insertImagePrompt()" title="이미지 URL 삽입">🖼️</button>
+            </div>
+            <div id="editor-product" class="editor-container" contenteditable="true" style="min-height: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 0 0 4px 4px; background: #fff;"></div>
+        </div>
+        <div class="form-group">
+            <label>함께 연출하기 좋은 상품 (Complete the Look)</label>
+            <input type="text" id="product-related" class="form-control" placeholder="연결할 상품 ID를 콤마로 구분하여 입력 (예: 1, 2, 3)">
+            <small style="display:block; margin-top:0.3rem; color:#666;">상품 상세페이지 하단 '룩을 완성하세요' 영역에 가로 스크롤 형태로 노출됩니다.</small>
+        </div>
+        <button type="submit" class="btn">상품 추가 및 동기화</button>
+    </form>
+</div>
+
+<div class="admin-header" style="margin-top: 4rem;">
+    <h2>등록된 상품 목록</h2>
+</div>
+<div class="admin-card" style="padding: 0;">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>이미지</th>
+                <th>상품명 / SKU</th>
+                <th>카테고리</th>
+                <th>가격</th>
+                <th>상태</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody id="admin-table-body">
+            <!-- JS Injection -->
+        </tbody>
+    </table>
+</div>
