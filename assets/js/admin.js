@@ -1,3 +1,5 @@
+import { getProducts, getSettings, getMembers, saveProduct, deleteProductApi, saveSettings } from './modules/api.js';
+
 // Global Error Tracking
 window.addEventListener('error', function(e) {
     if (e.message === 'Script error.' && !e.filename) return; // Ignore opaque/extension errors
@@ -15,6 +17,89 @@ window.addEventListener('unhandledrejection', function(e) {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // --- 1. 모듈화된 프레임(HTML 뷰) 동적 로딩 ---
+    const views = ['notices', 'settings', 'lookbook', 'products', 'members', 'orders', 'cs'];
+    const viewContainer = document.getElementById('admin-view-container');
+    if (viewContainer) {
+        for (const view of views) {
+            try {
+                const res = await fetch(`views/admin/${view}.html`);
+                const html = await res.text();
+                const section = document.createElement('section');
+                section.id = `view-${view}`;
+                section.className = 'admin-section';
+                section.style.display = 'none'; // 기본적으로 숨김
+                section.innerHTML = html;
+                viewContainer.appendChild(section);
+            } catch (err) {
+                console.error(`Failed to load view: ${view}`, err);
+            }
+        }
+        
+        // 첫 번째 탭 활성화 로직
+        const firstView = document.getElementById(`view-${views[0]}`);
+        if (firstView) firstView.style.display = 'block';
+
+        // Load settings module
+        try {
+            const settingsModule = await import('./admin/settings.js');
+            await settingsModule.initSettings();
+        } catch (e) {
+            console.error('Failed to init settings module:', e);
+        }
+
+        // 사이드바 내비게이션 탭 전환 이벤트 바인딩
+        const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                const targetId = item.getAttribute('data-target');
+                document.querySelectorAll('.admin-section').forEach(sec => sec.style.display = 'none');
+                
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) targetSection.style.display = 'block';
+            });
+        });
+
+        // 서브탭 로직 (공지사항, 푸터, 혜택)
+        const subtabNotices = document.getElementById('subtab-notices');
+        const subtabFooter = document.getElementById('subtab-footer');
+        const subtabPerks = document.getElementById('subtab-perks');
+        const subviewNotices = document.getElementById('subview-notices');
+        const subviewFooter = document.getElementById('subview-footer');
+        const subviewPerks = document.getElementById('subview-perks');
+
+        if (subtabNotices && subtabFooter && subtabPerks) {
+            const resetSubtabs = () => {
+                subtabNotices.style.background = '#f5f5f5'; subtabNotices.style.color = '#333';
+                subtabFooter.style.background = '#f5f5f5'; subtabFooter.style.color = '#333';
+                subtabPerks.style.background = '#f5f5f5'; subtabPerks.style.color = '#333';
+                if(subviewNotices) subviewNotices.style.display = 'none';
+                if(subviewFooter) subviewFooter.style.display = 'none';
+                if(subviewPerks) subviewPerks.style.display = 'none';
+            };
+            subtabNotices.addEventListener('click', () => {
+                resetSubtabs();
+                subtabNotices.style.background = '#111'; subtabNotices.style.color = '#fff';
+                if(subviewNotices) subviewNotices.style.display = 'block';
+            });
+            subtabFooter.addEventListener('click', () => {
+                resetSubtabs();
+                subtabFooter.style.background = '#111'; subtabFooter.style.color = '#fff';
+                if(subviewFooter) subviewFooter.style.display = 'block';
+                if (typeof renderFooterBoard === 'function') renderFooterBoard();
+            });
+            subtabPerks.addEventListener('click', () => {
+                resetSubtabs();
+                subtabPerks.style.background = '#111'; subtabPerks.style.color = '#fff';
+                if(subviewPerks) subviewPerks.style.display = 'block';
+            });
+        }
+    }
+
     let products = [];
     let settings = {};
     let members = [];
