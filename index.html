@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google" content="notranslate">
+    <title>SIR. - Minimalist Fashion</title>
+    <!-- PWA & Mobile App Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111111">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SIR.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=2026050806">
+</head>
+<body>
+
+    <header class="luxury-header" id="main-header">
+        <div class="header-inner">
+            <div class="header-logo-row">
+                <h1 class="logo">S I R .</h1>
+                <div class="header-right">
+                    <a href="notice.html">NOTICE</a>
+                    <a href="#">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> 
+                        SEARCH
+                    </a>
+                    <a href="#">LOYALTY</a>
+                    <a href="#">LOGIN</a>
+                    <a href="#" style="margin-left: 0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </a>
+                    <a href="#" id="cart-trigger">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg> 
+                        (<span id="cart-count">0</span>)
+                    </a>
+                </div>
+            </div>
+            <nav class="header-nav-row">
+                <a href="#">SHOP</a>
+                <a href="#">NEW ARRIVALS</a>
+                <a href="#">COMING SOON</a>
+                <a href="#">BEST SELLERS</a>
+                <a href="#">SHOP SOCIAL</a>
+                <a href="#">COLLECTIONS</a>
+                <a href="#" class="nav-highlight">YES SIR.</a>
+            </nav>
+        </div>
+    </header>
+
+
+
+    <main id="app-content">
+        <!-- Layout blocks injected dynamically by JS -->
+    </main>
+
+    <!-- Newsletter Modal -->
+    <div class="newsletter-overlay" id="newsletter-modal">
+        <div class="newsletter-modal-content">
+            <button class="newsletter-close" id="newsletter-close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <div class="newsletter-modal-image">
+                <img src="메인?��?지.jpg" alt="Newsletter" />
+            </div>
+            <div class="newsletter-modal-body">
+                <h3>�??��? ?�품 주문 ??10% ?�인 ?�택???�리?�요.</h3>
+                <p class="newsletter-desc">?�한, 취향??맞으?�면 ?�상??�??�로모션??가??먼�? 만나보실 ???�습?�다.</p>
+                <p class="newsletter-sub">?�스?�터�?구독?�세??</p>
+                
+                <form class="newsletter-modal-form" id="newsletter-form">
+                    <input type="text" placeholder="?�름" required>
+                    <input type="email" placeholder="?�메??주소" required>
+                    
+                    <div class="phone-input-group">
+                        <select class="country-code-select">
+                            <option value="+1">?��?�� +1</option>
+                            <option value="+82">?��?�� +82</option>
+                            <option value="+81">?��?�� +81</option>
+                            <option value="+86">?��?�� +86</option>
+                            <option value="+44">?��?�� +44</option>
+                            <option value="+61">?��?�� +61</option>
+                        </select>
+                        <input type="tel" placeholder="Mobile (Optional)">
+                    </div>
+                    
+                    <input type="password" placeholder="비�?번호" required>
+                    
+                    <button type="submit" class="newsletter-submit-btn">지�?가?�하?�요</button>
+                </form>
+                
+                <p class="newsletter-legal">???�식???�출?�고 문자 메시지 ?�신???�의?�으로써, 귀?�는 ?�공??번호�?Sir?�로부??마�???문자 메시지(?? ?�로모션, ?�바구니 ?�림)�??�신?�는 ???�의?�게 ?�니?? ?�의??구매 조건???�닙?�다. 메시지 �??�이???�금??부과될 ???�으�? 메시지 ?�신 빈도???��? ???�습?�다. ?�신 거�? 링크�??�릭?�여 ?�제?��? 구독??취소?????�습?�다. <a>개인?�보처리방침</a> �?<a>?�용?��?</a>??참조?�십?�오.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="global-footer-container"></div>
+
+    <script type="module" src="assets/js/nav.js"></script>
+    <script type="module" src="assets/js/promo.js"></script>
+    <script type="module" src="assets/js/cart.js"></script>
+    <script type="module" src="assets/js/store.js"></script>
+    <script type="module" src="assets/js/auth.js"></script>
+</body>
+</html>

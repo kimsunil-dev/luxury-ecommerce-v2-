@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIR. - Product Detail</title>
+    <!-- PWA & Mobile App Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111111">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SIR.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=2026050806">
+    <style>
+        .product-detail-container {
+            padding: 80px 0 4rem 2rem;
+            display: flex;
+            gap: 4rem;
+            max-width: 100%;
+            margin: 0;
+        }
+        .product-gallery {
+            flex: 2.2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .product-gallery img, .product-gallery video {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+        }
+        .product-info-panel {
+            flex: 1;
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+        .breadcrumb {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+        .detail-title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        .detail-price {
+            font-size: 1.2rem;
+            color: #444;
+            margin-bottom: 2rem;
+        }
+        .detail-desc {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 2rem;
+            white-space: pre-wrap;
+        }
+        .size-selector {
+            margin-bottom: 2rem;
+        }
+        .size-selector h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        .size-grid {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .size-btn {
+            border: 1px solid #ccc;
+            background: #fff;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .size-btn:hover, .size-btn.active {
+            border-color: #111;
+            background: #111;
+            color: #fff;
+        }
+        .add-to-cart-btn {
+            width: 100%;
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 1.2rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .add-to-cart-btn:hover {
+            background: #333;
+        }
+        /* Product Card Styles for Complete the Look Section */
+        .product-card {
+            position: relative;
+            background: #f5f5f5;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            cursor: pointer;
+        }
+        .product-card img.p-img, .product-card video.p-vid {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .product-card video.p-vid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.5s ease;
+            z-index: 1;
+            transform: scale(1.4);
+        }
+        .product-card:hover video.p-vid {
+            opacity: 1;
+            transform: scale(1.45);
+        }
+        .product-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: #111;
+            z-index: 2;
+        }
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        .product-card:hover img {
+            transform: scale(1.02);
+        }
+        .po-title {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+        .po-price {
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+        }
+        .po-color-box {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #111;
+            margin-bottom: 1rem;
+        }
+        .po-sizes {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .po-sizes span {
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        .po-size-item {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header" class="luxury-header" style="background-color: rgba(255, 255, 255, 0.95); color: #111; text-shadow: none;">
+        <div class="header-inner">
+            <div class="header-logo-row">
+                <a href="index.html" class="logo" style="color: #111; font-weight: 400;">SIR.</a>
+                <div class="header-right">
+                    <a href="#">SEARCH</a>
+                    <a href="#">ACCOUNT</a>
+                    <a href="#" id="cart-trigger">CART (<span id="cart-count">0</span>)</a>
+                    <a href="admin.html" style="color: #d93025;">[ADMIN]</a>
+                </div>
+            </div>
+            <nav class="header-nav-row" id="dynamic-nav">
+                <a href="index.html">SHOP</a>
+                <a href="index.html">NEW ARRIVALS</a>
+                <a href="index.html" class="nav-highlight">YES SIR.</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="product-detail-container">
+        <div class="product-gallery">
+            <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&q=80&w=800" alt="Detail 1">
+            <img src="https://images.unsplash.com/photo-1485230895905-31d986b1424e?auto=format&fit=crop&q=80&w=800" alt="Detail 2">
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=800" alt="Detail 3">
+            <img src="https://images.unsplash.com/photo-1515347619152-409b30528643?auto=format&fit=crop&q=80&w=800" alt="Detail 4">
+        </div>
+        <div class="product-info-panel">
+            <div class="breadcrumb">Dresses / Mini</div>
+            <h1 class="detail-title">Klara Ruched Mini Dress</h1>
+            <div class="detail-price">₩80,000</div>
+            
+            <p class="detail-desc" id="detail-desc-text">
+                ?�품 ?�세 ?�명???�기???�시?�니??
+            </p>
+
+            <div class="size-selector">
+                <h4>Select Size</h4>
+                <div class="size-grid" id="detail-sizes">
+                    <!-- Sizes injected by JS -->
+                </div>
+            </div>
+
+            <button class="add-to-cart-btn" onclick="if(window.currentProductId) addToCart(window.currentProductId); else alert('?�품??찾을 ???�습?�다.');">Add to Cart</button>
+        </div>
+    </main>
+
+    <!-- Complete the Look Section -->
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <section class="complete-look-section" style="padding: 6rem 0 6rem 2rem; display: none;" id="complete-look-section">
+        <div style="display: flex; gap: 4rem; align-items: flex-start; max-width: 100%; margin: 0;">
+            <div style="flex: 1; padding-left: 2rem; min-width: 200px;">
+                <h2 style="font-weight: 300; letter-spacing: 0.1em; font-size: 1.5rem; text-transform: uppercase; margin-top: 2rem; line-height: 1.4; word-break: keep-all;">룩을 ?�성?�세??/h2>
+            </div>
+            <div style="flex: 2.2; position: relative; min-width: 0;" id="slider-wrapper">
+                <style>
+                    #slider-prev, #slider-next {
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: opacity 0.3s ease, background 0.3s ease !important;
+                    }
+                    #slider-wrapper:hover #slider-prev.active, 
+                    #slider-wrapper:hover #slider-next.active {
+                        opacity: 1;
+                        pointer-events: auto;
+                    }
+                    #slider-prev:hover, #slider-next:hover {
+                        background: rgba(255,255,255,1) !important;
+                    }
+                </style>
+                <button id="slider-prev" style="position: absolute; left: 0; top: 0; bottom: 2rem; width: 64px; z-index: 10; background: rgba(255,255,255,0.85); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="18" height="36" viewBox="0 0 18 36" fill="none" stroke="#111" stroke-width="1.2">
+                        <polyline points="15,3 3,18 15,33"></polyline>
+                    </svg>
+                </button>
+                <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 2rem; scroll-behavior: smooth; scroll-snap-type: x mandatory;" class="no-scrollbar" id="related-products-container">
+                    <!-- Related products injected here -->
+                </div>
+                <button id="slider-next" style="position: absolute; right: 0; top: 0; bottom: 2rem; width: 64px; z-index: 10; background: rgba(255,255,255,0.85); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s ease;">
+                    <svg width="18" height="36" viewBox="0 0 18 36" fill="none" stroke="#111" stroke-width="1.2">
+                        <polyline points="3,3 15,18 3,33"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recently Viewed Section -->
+    <style>
+        .dot-btn {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .dot-btn:hover {
+            background: #bbb;
+        }
+        .dot-btn.active {
+            background: #111;
+            transform: scale(1.3);
+        }
+    </style>
+    <section class="recent-views-section" style="padding: 2rem 0 6rem 2rem; display: none;" id="recent-views-section">
+        <div style="display: flex; gap: 4rem; align-items: flex-start; max-width: 100%; margin: 0;">
+            <div style="flex: 1; padding-left: 2rem; min-width: 200px;">
+                <h2 style="font-weight: 300; letter-spacing: 0.1em; font-size: 1.5rem; text-transform: uppercase; margin-top: 2rem; line-height: 1.4; word-break: keep-all;">최근 �??�품</h2>
+            </div>
+            <div style="flex: 2.2; position: relative; min-width: 0;">
+                <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; scroll-behavior: smooth; scroll-snap-type: x mandatory;" class="no-scrollbar" id="recent-views-container">
+                    <!-- Products injected here -->
+                </div>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 0.8rem; margin-top: 1rem; margin-right: 1.5rem;" id="recent-views-dots">
+                    <!-- Dots injected here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="luxury-footer">
+        <div class="footer-top">
+            <div class="ft-item">
+                <span class="ft-hashtag">#SIRTHELABEL</span>
+            </div>
+            <div class="ft-item">
+                <div class="ft-title">Worldwide Instant Exchanges</div>
+                <div class="ft-desc">Easy online size swaps</div>
+            </div>
+            <div class="ft-item">
+                <div class="ft-title">Express Global Shipping</div>
+                <div class="ft-desc">Complimentary on orders over $400USD</div>
+            </div>
+            <div class="ft-item" style="border-right: none;">
+                <div class="ft-title">SIR. Loyalty</div>
+                <div class="ft-desc">Earn points and move through our tiered program</div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="fb-col">
+                <div class="fb-title">Customer Care</div>
+                <a href="#">Contact</a>
+                <a href="#">Shipping & Delivery</a>
+                <a href="#">Returns</a>
+                <a href="#">Afterpay</a>
+                <a href="#">Klarna</a>
+                <a href="#">FAQ</a>
+                <a href="#">Gift Cards</a>
+            </div>
+            <div class="fb-col">
+                <div class="fb-title">Info</div>
+                <a href="#">Our Story</a>
+                <a href="#">Values</a>
+                <a href="#">Loyalty</a>
+                <a href="#">Size Guide</a>
+                <a href="#">Stores</a>
+                <a href="#">Stockists</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+            </div>
+            <div class="fb-col">
+                <div class="fb-title">Join Us</div>
+                <a href="#">Tiktok</a>
+                <a href="#">Instagram</a>
+                <a href="#">Pinterest</a>
+                <a href="#">Facebook</a>
+                <a href="#">Join SIR. SMS</a>
+                <a href="#">Loyalty</a>
+                <a href="#">Linkedin</a>
+            </div>
+            <div class="fb-col fb-newsletter">
+                <div class="fb-title">Receive 10% Off Your First Order</div>
+                <div class="email-input-wrapper">
+                    <input type="email" placeholder="Email address">
+                    <button>가입</button>
+                </div>
+                <div class="fb-text">We're located in Sydney, Australia</div>
+                <div class="fb-text" style="margin-top: 1rem;">Customer Care hours:<br>Sun - Thurs | 3pm - 10pm PST</div>
+                <div class="fb-text" style="margin-top: 1rem;">Email: customercare@sirthelabel.com</div>
+                <div class="fb-text">Phone: +61 2 9191 0245</div>
+                <div class="fb-text">WhatsApp: +61 2 9191 0245</div>
+                
+                <div class="fb-region">
+                    REGION: INTERNATIONAL <span style="float: right; transform: scaleY(0.7); font-weight: 300;">V</span>
+                </div>
+            </div>
+    </footer>
+
+    <script type="module" src="assets/js/nav.js"></script>
+    <script type="module" src="assets/js/promo.js"></script>
+    <script type="module" src="assets/js/cart.js"></script>
+    <script type="module">
+        import { getProducts } from './assets/js/modules/api.js';
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id');
+                let products = [];
+                let product = null;
+                try {
+                    products = await getProducts();
+                    if (Array.isArray(products)) {
+                        product = products.find(p => p && String(p.id) === String(productId));
+                    }
+                } catch (err) {
+                    console.error("Error fetching products:", err);
+                }
+
+                // If no product is found (e.g. opened directly without ?id=), use a gorgeous fallback demo product
+                if (!product) {
+                    product = {
+                        id: 9999,
+                        name: 'Klara Ruched Mini Dress (Demo)',
+                        price: 380000,
+                        category: 'Dresses / Mini',
+                        description: 'This is a demo product because no specific product was selected.\n\nA signature ruched mini dress crafted from a crisp lightweight cotton. Features an asymmetrical neckline and gathering throughout the body.',
+                        image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=800&q=80',
+                        sizes: '0, 1, 2, 3',
+                        color: '#ffffff'
+                    };
+                }
+
+                if (product) {
+                    window.currentProductId = product.id;
+                    document.querySelector('.detail-title').innerText = product.name || 'Untitled';
+                    document.querySelector('.detail-price').innerText = '₩' + (Number(product.price) || 0).toLocaleString();
+                    document.querySelector('.breadcrumb').innerText = product.category || 'Category';
+                    document.getElementById('detail-desc-text').innerText = product.description || '?�세 ?�명???�습?�다.';
+
+                    // Sizes
+                    const sizesStr = product.sizes || '0P, 0, 1, 2, 3, 4';
+                    const sizesContainer = document.getElementById('detail-sizes');
+                    sizesContainer.innerHTML = sizesStr.split(',').map((s, idx) => 
+                        `<button class="size-btn ${idx === 0 ? 'active' : ''}" onclick="document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active')); this.classList.add('active');">${s.trim()}</button>`
+                    ).join('');
+
+                    // Media Gallery
+                    const gallery = document.querySelector('.product-gallery');
+                    gallery.innerHTML = '';
+                    
+                    const setMediaSrc = (el, src) => {
+                        if (src && src.startsWith('data:') && src.length > 1000) {
+                            try {
+                                const byteString = atob(src.split(',')[1]);
+                                const mimeString = src.split(',')[0].split(':')[1].split(';')[0];
+                                const ab = new ArrayBuffer(byteString.length);
+                                const ia = new Uint8Array(ab);
+                                for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+                                const blob = new Blob([ab], {type: mimeString});
+                                el.src = URL.createObjectURL(blob);
+                                if(el.load) el.load();
+                            } catch(e) {
+                                el.src = src;
+                            }
+                        } else {
+                            el.src = src;
+                        }
+                    };
+
+                    // Add main image
+                    if (product.image) {
+                        const img = document.createElement('img'); img.alt = product.name || ''; setMediaSrc(img, product.image); gallery.appendChild(img);
+                    }
+
+                    // Add video if exists
+                    if (product.video) {
+                        const vid = document.createElement('video'); vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true; vid.style.width = '100%'; vid.style.objectFit = 'cover'; vid.style.height = '100%';
+                        setMediaSrc(vid, product.video);
+                        gallery.appendChild(vid);
+                    }
+
+                    // Add sub images
+                    if (product.subImages && product.subImages.length > 0) {
+                        product.subImages.forEach(src => {
+                            const img = document.createElement('img'); img.alt = product.name || ''; setMediaSrc(img, src); gallery.appendChild(img);
+                        });
+                    }
+
+                    // ?�이?��? ?�이?�웃 조정 (?��?지가 1개일 ??�?공간 방�?)
+                    if (gallery.children.length === 1) {
+                        gallery.style.gridTemplateColumns = '1fr';
+                        gallery.style.flex = '1.1';
+                    } else {
+                        gallery.style.gridTemplateColumns = '1fr 1fr';
+                        gallery.style.flex = '2.2';
+                    }
+
+                    // Complete the Look (Related Products)
+                    const dummyProducts = [
+                        { id: 'd1', name: 'Alena Bias Maxi Dress', price: 420000, color: '#f5f5f5', sizes: '0, 1, 2, 3', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=600&q=80' },
+                        { id: 'd2', name: 'Willie Silk Top', price: 210000, color: '#e0e0e0', sizes: '1, 2, 3', image: 'https://images.unsplash.com/photo-1485230895905-31d986b1424e?auto=format&fit=crop&w=600&q=80' },
+                        { id: 'd3', name: 'Realta Knit Skirt', price: 189000, color: '#333333', sizes: '0, 1, 2', image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80' },
+                        { id: 'd4', name: 'Klara Ruched Mini', price: 340000, color: '#111111', sizes: '1, 2, 3', image: 'https://images.unsplash.com/photo-1515347619152-409b30528643?auto=format&fit=crop&w=600&q=80' },
+                        { id: 'd5', name: 'Nadir Tailored Blazer', price: 520000, color: '#aaaaaa', sizes: '0, 1, 2, 3', image: 'https://images.unsplash.com/photo-1524041255072-7da0525d6b34?auto=format&fit=crop&w=600&q=80' },
+                        { id: 'd6', name: 'Gilles Tailored Pant', price: 290000, color: '#666666', sizes: '1, 2, 3', image: 'https://images.unsplash.com/photo-1550614000-4b95dd2dbccf?auto=format&fit=crop&w=600&q=80' },
+                    ];
+
+                    let relatedItems = [];
+                    if (product.relatedProducts && product.relatedProducts.trim() !== '') {
+                        const ids = product.relatedProducts.split(',').map(s => parseInt(s.trim())).filter(id => !isNaN(id));
+                        relatedItems = products.filter(p => ids.includes(p.id));
+                    } else {
+                        const otherProducts = products.filter(p => p.id !== product.id);
+                        if (otherProducts.length === 0) {
+                            relatedItems = dummyProducts.slice(0, 4);
+                        } else {
+                            relatedItems = [...otherProducts].sort(() => 0.5 - Math.random()).slice(0, 8);
+                        }
+                    }
+
+                    if (relatedItems.length > 0) {
+                        document.getElementById('complete-look-section').style.display = 'block';
+                        const relContainer = document.getElementById('related-products-container');
+                        const fragmentRel = document.createDocumentFragment();
+
+                        relatedItems.forEach(p => {
+                            let priceStr = '₩' + (Number(p.price) || 0).toLocaleString() + ' KRW';
+                            let colorHex = p.color || '#ffffff';
+                            let sizesStr = p.sizes || '0P, 0, 1, 2, 3, 4';
+                            let sizesHtml = sizesStr.split(',').map(s => `<span class="po-size-item">${s.trim()}</span>`).join('');
+                            
+                            const card = document.createElement('div');
+                            card.className = 'product-card';
+                            // 기존 50% ?�기?�서 2/3 ?��?(??33.3%)?�로 ??축소
+                            card.style.minWidth = 'calc(33.333% - 0.66rem)';
+                            card.style.maxWidth = 'calc(33.333% - 0.66rem)';
+                            card.style.flexShrink = '0';
+                            card.style.position = 'relative';
+                            card.style.scrollSnapAlign = 'start';
+                            card.onclick = () => location.href = `product.html?id=${p.id}`;
+                            card.onmouseenter = () => { const v = card.querySelector('video'); if(v) v.play().catch(()=>{}); };
+                            card.onmouseleave = () => { const v = card.querySelector('video'); if(v) { v.pause(); v.currentTime = 0; } };
+
+                            const setMediaSrc = (el, src) => {
+                                if (src && src.startsWith('data:') && src.length > 1000) {
+                                    try {
+                                        const byteString = atob(src.split(',')[1]);
+                                        const mimeString = src.split(',')[0].split(':')[1].split(';')[0];
+                                        const ab = new ArrayBuffer(byteString.length);
+                                        const ia = new Uint8Array(ab);
+                                        for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+                                        const blob = new Blob([ab], {type: mimeString});
+                                        el.src = URL.createObjectURL(blob);
+                                        if(el.load) el.load();
+                                    } catch(e) {
+                                        el.src = src;
+                                    }
+                                } else {
+                                    el.src = src;
+                                }
+                            };
+
+                            if (p.video && p.image) {
+                                const img = document.createElement('img'); img.alt = p.name || ''; img.className = 'p-img'; setMediaSrc(img, p.image);
+                                const vid = document.createElement('video'); vid.loop = true; vid.muted = true; vid.playsInline = true; vid.className = 'p-vid'; setMediaSrc(vid, p.video);
+                                card.appendChild(img); card.appendChild(vid);
+                            } else if (p.video) {
+                                const vid = document.createElement('video'); vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true; vid.className = 'p-vid'; vid.style.opacity = '1'; vid.style.position = 'relative'; vid.style.zIndex = '1'; setMediaSrc(vid, p.video);
+                                card.appendChild(vid);
+                            } else if (p.image) {
+                                const img = document.createElement('img'); img.alt = p.name || ''; img.className = 'p-img'; setMediaSrc(img, p.image);
+                                card.appendChild(img);
+                            }
+
+                            const overlay = document.createElement('div');
+                            overlay.className = 'product-overlay';
+                            overlay.innerHTML = `
+                                <div class="po-title">${p.name || 'Untitled'}</div>
+                                <div class="po-price">${priceStr}</div>
+                                <div class="po-color-box" style="background-color: ${colorHex};"></div>
+                                <div class="po-sizes">
+                                    <span>SIZE</span>
+                                    ${sizesHtml}
+                                </div>
+                            `;
+                            card.appendChild(overlay);
+                            fragmentRel.appendChild(card);
+                        });
+                        relContainer.appendChild(fragmentRel);
+
+                        // ?�살???�라?�더 ?�작 바인??(?�확?�게 1�?카드 ?�비 + �?만큼 ?�동)
+                        const nextBtn = document.getElementById('slider-next');
+                        const prevBtn = document.getElementById('slider-prev');
+                        
+                        nextBtn.onclick = () => {
+                            const firstCard = relContainer.querySelector('.product-card');
+                            if(!firstCard) return;
+                            const scrollAmount = firstCard.offsetWidth + parseFloat(getComputedStyle(relContainer).gap || 16);
+                            relContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                        };
+                        
+                        prevBtn.onclick = () => {
+                            const firstCard = relContainer.querySelector('.product-card');
+                            if(!firstCard) return;
+                            const scrollAmount = firstCard.offsetWidth + parseFloat(getComputedStyle(relContainer).gap || 16);
+                            relContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                        };
+
+                        const updateArrowVisibility = () => {
+                            // ?�간???�차(5px) ?�용
+                            const isAtStart = relContainer.scrollLeft <= 5;
+                            const isAtEnd = relContainer.scrollLeft + relContainer.clientWidth >= relContainer.scrollWidth - 5;
+                            
+                            if (isAtStart) prevBtn.classList.remove('active');
+                            else prevBtn.classList.add('active');
+                            
+                            if (isAtEnd) nextBtn.classList.remove('active');
+                            else nextBtn.classList.add('active');
+                        };
+
+                        relContainer.addEventListener('scroll', updateArrowVisibility);
+                        // ?�더�?직후 초기??(?�소가 그려�??�간???�보)
+                        setTimeout(updateArrowVisibility, 100);
+                    }
+
+                    // Tracking Recent Views in localStorage
+                    let recentIds = [];
+                    try {
+                        recentIds = JSON.parse(localStorage.getItem('sir_recent_views') || '[]');
+                    } catch(e) {}
+                    
+                    // For display, exclude current product
+                    const displayRecentIds = recentIds.filter(id => id !== product.id);
+                    
+                    // Update the history for future pages
+                    recentIds = recentIds.filter(id => id !== product.id);
+                    recentIds.unshift(product.id);
+                    if (recentIds.length > 12) recentIds.pop();
+                    localStorage.setItem('sir_recent_views', JSON.stringify(recentIds));
+
+                    const recentSection = document.getElementById('recent-views-section');
+                    const recentContainer = document.getElementById('recent-views-container');
+                    const recentDots = document.getElementById('recent-views-dots');
+                    
+                    let recentProducts = [];
+                    displayRecentIds.forEach(id => {
+                        const p = products.find(prod => prod && String(prod.id) === String(id));
+                        if (p) recentProducts.push(p);
+                    });
+
+                    // Fallback demo if no history yet
+                    if (recentProducts.length === 0) {
+                        const otherProducts = products.filter(p => p.id !== product.id);
+                        if (otherProducts.length === 0) {
+                            recentProducts = dummyProducts.slice(2, 6);
+                        } else {
+                            recentProducts = [...otherProducts].sort(() => 0.5 - Math.random()).slice(0, 6);
+                        }
+                    }
+                    
+                    if (recentProducts.length > 0) {
+                        recentSection.style.display = 'block';
+                        const fragmentRecent = document.createDocumentFragment();
+                            recentProducts.forEach(p => {
+                                // Reuse the same card building logic
+                                let priceStr = '₩' + (Number(p.price) || 0).toLocaleString() + ' KRW';
+                                let colorHex = p.color || '#ffffff';
+                                let sizesStr = p.sizes || '0P, 0, 1, 2, 3, 4';
+                                let sizesHtml = sizesStr.split(',').map(s => `<span class="po-size-item">${s.trim()}</span>`).join('');
+                                
+                                const card = document.createElement('div');
+                                card.className = 'product-card';
+                                card.style.minWidth = 'calc(33.333% - 0.66rem)';
+                                card.style.maxWidth = 'calc(33.333% - 0.66rem)';
+                                card.style.flexShrink = '0';
+                                card.style.position = 'relative';
+                                card.style.scrollSnapAlign = 'start';
+                                card.onclick = () => location.href = `product.html?id=${p.id}`;
+                                card.onmouseenter = () => { const v = card.querySelector('video'); if(v) v.play().catch(()=>{}); };
+                                card.onmouseleave = () => { const v = card.querySelector('video'); if(v) { v.pause(); v.currentTime = 0; } };
+
+                                const setMediaSrc = (el, src) => {
+                                    if (src && src.startsWith('data:') && src.length > 1000) {
+                                        try {
+                                            const byteString = atob(src.split(',')[1]);
+                                            const mimeString = src.split(',')[0].split(':')[1].split(';')[0];
+                                            const ab = new ArrayBuffer(byteString.length);
+                                            const ia = new Uint8Array(ab);
+                                            for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+                                            const blob = new Blob([ab], {type: mimeString});
+                                            el.src = URL.createObjectURL(blob);
+                                            if(el.load) el.load();
+                                        } catch(e) {
+                                            el.src = src;
+                                        }
+                                    } else {
+                                        el.src = src;
+                                    }
+                                };
+
+                                if (p.video && p.image) {
+                                    const img = document.createElement('img'); img.alt = p.name || ''; img.className = 'p-img'; setMediaSrc(img, p.image);
+                                    const vid = document.createElement('video'); vid.loop = true; vid.muted = true; vid.playsInline = true; vid.className = 'p-vid'; setMediaSrc(vid, p.video);
+                                    card.appendChild(img); card.appendChild(vid);
+                                } else if (p.video) {
+                                    const vid = document.createElement('video'); vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true; vid.className = 'p-vid'; vid.style.opacity = '1'; vid.style.position = 'relative'; vid.style.zIndex = '1'; setMediaSrc(vid, p.video);
+                                    card.appendChild(vid);
+                                } else if (p.image) {
+                                    const img = document.createElement('img'); img.alt = p.name || ''; img.className = 'p-img'; setMediaSrc(img, p.image);
+                                    card.appendChild(img);
+                                }
+
+                                const overlay = document.createElement('div');
+                                overlay.className = 'product-overlay';
+                                overlay.innerHTML = `
+                                    <div class="po-title">${p.name || 'Untitled'}</div>
+                                    <div class="po-price">${priceStr}</div>
+                                    <div class="po-color-box" style="background-color: ${colorHex};"></div>
+                                    <div class="po-sizes">
+                                        <span>SIZE</span>
+                                        ${sizesHtml}
+                                    </div>
+                                `;
+                                card.appendChild(overlay);
+                                fragmentRecent.appendChild(card);
+                            });
+                            recentContainer.appendChild(fragmentRecent);
+                            
+                            // Dot Pagination Logic
+                            const itemsPerPage = 3;
+                            const pageCount = Math.ceil(recentProducts.length / itemsPerPage);
+                            
+                            if (pageCount > 1) {
+                                for (let i = 0; i < pageCount; i++) {
+                                    const dot = document.createElement('button');
+                                    dot.className = 'dot-btn' + (i === 0 ? ' active' : '');
+                                    dot.onclick = () => {
+                                        const cards = recentContainer.querySelectorAll('.product-card');
+                                        if (cards.length > i * itemsPerPage) {
+                                            cards[i * itemsPerPage].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+                                        }
+                                    };
+                                    recentDots.appendChild(dot);
+                                }
+                                
+                                recentContainer.addEventListener('scroll', () => {
+                                    const scrollPos = recentContainer.scrollLeft;
+                                    const cards = recentContainer.querySelectorAll('.product-card');
+                                    if(!cards.length) return;
+                                    const cardWidth = cards[0].offsetWidth + parseFloat(getComputedStyle(recentContainer).gap || 16);
+                                    const firstVisibleIndex = Math.round(scrollPos / cardWidth);
+                                    let currentPage = Math.floor(firstVisibleIndex / itemsPerPage);
+                                    if (currentPage >= pageCount) currentPage = pageCount - 1;
+                                    
+                                    const dots = recentDots.querySelectorAll('.dot-btn');
+                                    dots.forEach((d, idx) => {
+                                        if (idx === currentPage) d.classList.add('active');
+                                        else d.classList.remove('active');
+                                    });
+                                });
+                            }
+                        }
+                    } else {
+                        document.querySelector('.product-info-panel').innerHTML = '<h2>?�품??찾을 ???�습?�다.</h2>';
+                        document.querySelector('.product-gallery').innerHTML = '';
+                    }
+                } catch(e) {
+                    console.error('CRITICAL JS ERROR:', e);
+                    document.body.innerHTML = '<div style="padding:100px; color:red; font-size:24px;"><h1>치명?�인 ?�크립트 ?�류 발생</h1><p>' + e.message + '</p></div>' + document.body.innerHTML;
+                }
+        });
+    </script>
+</body>
+</html>

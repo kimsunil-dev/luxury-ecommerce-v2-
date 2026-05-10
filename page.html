@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google" content="notranslate">
+    <title>SIR. - Information</title>
+    <!-- PWA & Mobile App Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111111">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SIR.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=2026050901">
+    <style>
+        .page-container {
+            padding: 150px 2rem 4rem; /* top padding to account for fixed header */
+            max-width: 800px;
+            margin: 0 auto;
+            min-height: 60vh;
+        }
+        .page-title {
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        .page-content {
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        .page-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 4rem; /* 1?�과 2???�이???��?�?공백 */
+            margin: 0 auto 2rem;
+            width: 100%;
+        }
+        .page-col {
+            min-width: 0; /* 글?��? 침범?�는 ?�상 방�? */
+            word-break: break-word;
+            overflow-wrap: break-word;
+            text-align: left; /* 글?�는 ?�쪽 ?�렬 */
+        }
+        @media (max-width: 768px) {
+            .page-row {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+        .page-hr {
+            border: 0;
+            border-top: 1px solid #eee;
+            margin: 3rem 0;
+        }
+        .page-h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header" class="luxury-header" style="background-color: rgba(255, 255, 255, 0.95); color: #111; text-shadow: none;">
+        <div class="header-inner">
+            <div class="header-logo-row">
+                <a href="index.html" class="logo" style="color: #111; font-weight: 400;">SIR.</a>
+                <div class="header-right">
+                    <a href="notice.html">NOTICE</a>
+                    <a href="#">SEARCH</a>
+                    <a href="#">ACCOUNT</a>
+                    <a href="#" id="cart-trigger">CART (<span id="cart-count">0</span>)</a>
+                    <a href="admin.html" style="color: #d93025;">[ADMIN]</a>
+                </div>
+            </div>
+            <nav class="header-nav-row" id="dynamic-nav">
+                <!-- Nav injected by JS -->
+            </nav>
+        </div>
+    </header>
+    <div id="page-hero" style="display:none; position:relative; width:100%; height:60vh; background-size:cover; background-position:center; margin-top:80px;">
+        <div style="position:absolute; inset:0; background:rgba(0,0,0,0.3);"></div>
+        <h1 id="hero-page-title" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#fff; font-size:2.5rem; letter-spacing:0.1em; font-weight:400; text-shadow:0 2px 4px rgba(0,0,0,0.5);"></h1>
+    </div>
+
+    <main class="page-container">
+        <h1 class="page-title" id="page-title">Loading...</h1>
+        <div class="page-content" id="page-content">
+            <!-- Content injected here -->
+        </div>
+    </main>
+
+    <!-- Footer container -->
+    <div id="global-footer-container"></div>
+
+    <script type="module" src="assets/js/nav.js"></script>
+    <script type="module" src="assets/js/store.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetTitle = urlParams.get('title');
+            
+            const titleEl = document.getElementById('page-title');
+            const contentEl = document.getElementById('page-content');
+            
+            if (!targetTitle) {
+                titleEl.innerText = "Page Not Found";
+                contentEl.innerText = "?�청?�신 ?�이지�?찾을 ???�습?�다.";
+                return;
+            }
+            
+            titleEl.innerText = targetTitle;
+            document.title = `SIR. - ${targetTitle}`;
+            
+            try {
+                const settings = await getSettings();
+                let foundItem = null;
+                
+                // Search for the title in footerMenus
+                if (settings && settings.footerMenus) {
+                    for (let cat of settings.footerMenus) {
+                        for (let item of cat.items) {
+                            if (item.title === targetTitle && item.type === 'page') {
+                                foundItem = item;
+                                break;
+                            }
+                        }
+                        if (foundItem) break;
+                    }
+                }
+                
+                if (foundItem && foundItem.content && foundItem.content.trim() !== '') {
+                    // Check for hero image
+                    if (foundItem.image) {
+                        const heroEl = document.getElementById('page-hero');
+                        heroEl.style.display = 'block';
+                        heroEl.style.backgroundImage = `url(${foundItem.image})`;
+                        document.getElementById('hero-page-title').innerText = targetTitle;
+                        
+                        document.getElementById('page-title').style.display = 'none';
+                        document.querySelector('.page-container').style.paddingTop = '4rem';
+                    }
+
+                    let foundContent = foundItem.content.trim();
+                    // Check if content is JSON (new structured layout)
+                    let isJson = false;
+                    let layoutData = null;
+                    try {
+                        if (foundContent.startsWith('{')) {
+                            layoutData = JSON.parse(foundContent);
+                            isJson = true;
+                        }
+                    } catch(e) {
+                        console.error("JSON parse error:", e);
+                    }
+                    
+                    if (isJson && layoutData.type === 'contact') {
+                        // Render 2-column grid layout
+                        contentEl.innerHTML = `
+                            <div class="page-row">
+                                <div class="page-col">${layoutData.left || ''}</div>
+                                <div class="page-col">${layoutData.right || ''}</div>
+                            </div>
+                            ${layoutData.bottom ? `<hr class="page-hr"><div style="margin-top:2rem;">${layoutData.bottom}</div>` : ''}
+                        `;
+                    } else if (isJson && layoutData.type === 'standard') {
+                        contentEl.innerHTML = layoutData.content || '';
+                    } else {
+                        // Fallback for old shortcode or raw text
+                        let safeText = foundContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        let html = safeText
+                            .replace(/\[row\]/g, '<div class="page-row">')
+                            .replace(/\[\/row\]/g, '</div>')
+                            .replace(/\[col\]/g, '<div class="page-col">')
+                            .replace(/\[\/col\]/g, '</div>')
+                            .replace(/\[hr\]/g, '<hr class="page-hr">')
+                            .replace(/\[h3\](.*?)\[\/h3\]/g, '<h3 class="page-h3">$1</h3>')
+                            .replace(/\[b\](.*?)\[\/b\]/g, '<strong>$1</strong>');
+                        html = html.replace(/\n/g, '<br>');
+                        html = html.replace(/<div class="page-row"><br>/g, '<div class="page-row">');
+                        html = html.replace(/<\/div><br>/g, '</div>');
+                        html = html.replace(/<div class="page-col"><br>/g, '<div class="page-col">');
+                        html = html.replace(/<hr class="page-hr"><br>/g, '<hr class="page-hr">');
+                        html = html.replace(/<\/h3><br>/g, '</h3>');
+                        contentEl.innerHTML = html;
+                    }
+                } else {
+                    contentEl.innerHTML = "<p style='text-align:center; color:#888; margin-top:3rem;'>?�록???�세 ?�용???�습?�다.</p>";
+                }
+            } catch(e) {
+                console.error("Failed to load page content", e);
+                contentEl.innerText = "콘텐츠�? 불러?�는 �??�류가 발생?�습?�다.";
+            }
+        });
+    </script>
+</body>
+</html>

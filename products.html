@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google" content="notranslate">
+    <title>SIR. - Products</title>
+    <!-- PWA & Mobile App Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111111">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SIR.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=2026050901">
+    <style>
+        .product-grid-container {
+            padding: 120px 2rem 4rem; /* top padding to account for fixed header */
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .collection-title {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px; /* Slight gap if we want to show separating lines, or 0 */
+            background: #fff;
+        }
+        .product-card {
+            position: relative;
+            background: #f5f5f5; /* Light gray background for image if transparent */
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            cursor: pointer;
+        }
+        .product-card img.p-img, .product-card video.p-vid {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .product-card video.p-vid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.5s ease;
+            z-index: 1;
+            /* ?�상 ?�체???�함??검?� ?�백???�르�??�해 ?�기�??��? */
+            transform: scale(1.4);
+        }
+        .product-card:hover video.p-vid {
+            opacity: 1;
+            transform: scale(1.45);
+        }
+        /* The Overlay */
+        .product-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: #111;
+            z-index: 2;
+        }
+        .product-card:hover .product-overlay {
+            opacity: 1;
+        }
+        .product-card:hover img {
+            transform: scale(1.02);
+        }
+        .po-title {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+        .po-price {
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+        }
+        /* Color box */
+        .po-color-box {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #111;
+            margin-bottom: 1rem;
+        }
+        /* Sizes */
+        .po-sizes {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .po-sizes span {
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        .po-size-item {
+            color: #555;
+        }
+        
+        @media (max-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .products-grid { grid-template-columns: repeat(1, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header" class="luxury-header" style="background-color: rgba(255, 255, 255, 0.95); color: #111; text-shadow: none;">
+        <div class="header-inner">
+            <div class="header-logo-row">
+                <a href="index.html" class="logo" style="color: #111; font-weight: 400;">SIR.</a>
+                <div class="header-right">
+                    <a href="notice.html">NOTICE</a>
+                    <a href="#">SEARCH</a>
+                    <a href="#">ACCOUNT</a>
+                    <a href="#" id="cart-trigger">CART (<span id="cart-count">0</span>)</a>
+                    <a href="admin.html" style="color: #d93025;">[ADMIN]</a>
+                </div>
+            </div>
+            <nav class="header-nav-row" id="dynamic-nav">
+                <!-- Nav injected by JS -->
+            </nav>
+        </div>
+    </header>
+
+    <main class="product-grid-container">
+        <h2 class="collection-title">NEW ARRIVALS</h2>
+        <div class="products-grid" id="products-grid">
+            <!-- Dynamic products injected here -->
+        </div>
+    </main>
+
+    <div id="global-footer-container"></div>
+
+    <script type="module" src="assets/js/nav.js"></script>
+    <script type="module" src="assets/js/promo.js"></script>
+    <script type="module" src="assets/js/cart.js"></script>
+    <script type="module">
+        import { getProducts } from './assets/js/modules/api.js';
+        // Global Error Tracking
+        window.addEventListener('error', function(e) {
+            if (e.message === 'Script error.' && !e.filename) return; // Ignore opaque/extension errors
+            if (e.message && e.message.includes('Script error.') && e.lineno === 0) return;
+            const errDiv = document.createElement('div');
+            errDiv.style = "position:fixed;top:50px;left:0;background:red;color:white;z-index:9999;padding:20px;font-size:16px;width:100%;box-sizing:border-box;box-shadow:0 4px 10px rgba(0,0,0,0.3);";
+            errDiv.innerText = `JS ERROR: ${e.message} at ${e.filename}:${e.lineno}`;
+            document.body.appendChild(errDiv);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            const errDiv = document.createElement('div');
+            errDiv.style = "position:fixed;top:100px;left:0;background:orange;color:white;z-index:9999;padding:20px;font-size:16px;width:100%;box-sizing:border-box;";
+            errDiv.innerText = `PROMISE REJECTION: ${e.reason}`;
+            document.body.appendChild(errDiv);
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Render Products
+                const productsGrid = document.getElementById('products-grid');
+                if (!productsGrid) {
+                    console.error('Products grid container not found.');
+                    return;
+                }
+                const products = await getProducts();
+            
+            if (products && products.length > 0) {
+                productsGrid.innerHTML = '';
+                const displayProducts = [...products].reverse();
+                const fragment = document.createDocumentFragment();
+
+                displayProducts.forEach(p => {
+                    if (!p) return;
+                    let priceStr = '₩' + (Number(p.price) || 0).toLocaleString() + ' KRW';
+                    let colorHex = p.color || '#ffffff';
+                    let sizesStr = p.sizes || '0P, 0, 1, 2, 3, 4';
+                    let sizesHtml = sizesStr.split(',').map(s => `<span class="po-size-item">${s.trim()}</span>`).join('');
+                    
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.onclick = () => location.href = `product.html?id=${p.id}`;
+                    card.onmouseenter = () => { const v = card.querySelector('video'); if(v) v.play().catch(()=>{}); };
+                    card.onmouseleave = () => { const v = card.querySelector('video'); if(v) { v.pause(); v.currentTime = 0; } };
+
+                    const setMediaSrc = (el, src) => {
+                        if (src && src.startsWith('data:') && src.length > 1000) {
+                            try {
+                                const byteString = atob(src.split(',')[1]);
+                                const mimeString = src.split(',')[0].split(':')[1].split(';')[0];
+                                const ab = new ArrayBuffer(byteString.length);
+                                const ia = new Uint8Array(ab);
+                                for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+                                const blob = new Blob([ab], {type: mimeString});
+                                el.src = URL.createObjectURL(blob);
+                                if(el.load) el.load();
+                            } catch(e) {
+                                el.src = src;
+                            }
+                        } else {
+                            el.src = src;
+                        }
+                    };
+
+                    if (p.video && p.image) {
+                        const img = document.createElement('img'); img.alt = p.name || ''; img.className = 'p-img'; setMediaSrc(img, p.image);
+                        const vid = document.createElement('video'); vid.loop = true; vid.muted = true; vid.playsInline = true; vid.className = 'p-vid'; setMediaSrc(vid, p.video);
+                        card.appendChild(img); card.appendChild(vid);
+                    } else if (p.video) {
+                        const vid = document.createElement('video'); vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true; vid.className = 'p-vid'; vid.style.opacity = '1'; vid.style.position = 'relative'; vid.style.zIndex = '1'; setMediaSrc(vid, p.video);
+                        card.appendChild(vid);
+                    } else if (p.image) {
+                        const img = document.createElement('img'); img.alt = p.name || ''; img.className = 'p-img'; setMediaSrc(img, p.image);
+                        card.appendChild(img);
+                    } else {
+                        const img = document.createElement('img'); img.alt = 'Placeholder'; img.className = 'p-img'; img.src = 'https://via.placeholder.com/400x500';
+                        card.appendChild(img);
+                    }
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'product-overlay';
+                    overlay.innerHTML = `
+                        <div class="po-title">${p.name || 'Untitled'}</div>
+                        <div class="po-price">${priceStr}</div>
+                        <div class="po-color-box" style="background-color: ${colorHex};"></div>
+                        <div class="po-sizes">
+                            <span>SIZE</span>
+                            ${sizesHtml}
+                        </div>
+                    `;
+                    card.appendChild(overlay);
+                    fragment.appendChild(card);
+                });
+                productsGrid.appendChild(fragment);
+            } else {
+                productsGrid.innerHTML = '<p style="padding: 2rem;">?�록???�품???�습?�다.</p>';
+            }
+            } catch (err) {
+                console.error('Error during product rendering:', err);
+                const productsGrid = document.getElementById('products-grid');
+                if(productsGrid) productsGrid.innerHTML = '<p style="padding: 2rem; color:red;">?�품 ?�보�?불러?�는 �??�류가 발생?�습?�다.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
